@@ -1,0 +1,23 @@
+index f2f3116..9317c52 100644
+--- a/framework/src/main/resources/slave.sh
++++ b/framework/src/main/resources/slave.sh
+@@ -105,15 +105,15 @@ D_VARS="${D_VARS} -Djgroups.gossip_host=${GOSSIP_HOST}"
+ fi
+ 
+ #enable	remote JMX
+-D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.port=${JMX_SLAVES_PORT}"
+-D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.authenticate=false"
+-D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.ssl=false"
++#D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.port=${JMX_SLAVES_PORT}"
++#D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.authenticate=false"
++#D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.ssl=false"
+ 
+ 
+ HOST_NAME=`hostname`
+ echo "java ${JVM_OPTS} ${D_VARS} -classpath $CP org.radargun.Slave ${CONF}" > ${LOCAL_PREFIX}stdout_slave_${HOST_NAME}.out
+ echo "--------------------------------------------------------------------------------" >> ${LOCAL_PREFIX}stdout_slave_${HOST_NAME}.out
+-nohup java ${JVM_OPTS} ${D_VARS} -classpath $CP org.radargun.Slave ${CONF} >> ${LOCAL_PREFIX}stdout_slave_${HOST_NAME}.out 2>&1 &
++nohup java ${JVM_OPTS} ${D_VARS} -classpath $CP org.radargun.Slave ${CONF} >> ${LOCAL_PREFIX}stdout_slave_${HOST_NAME}.out.$$ 2>&1 &
+ echo "... done! Slave process started on host ${HOST_NAME}!"
+ echo ""
+ 

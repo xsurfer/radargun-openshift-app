@@ -1,0 +1,21 @@
+index e4e0a3a..6ffdd09 100644
+--- a/plugins/infinispan4/src/main/resources/ispn.xml
++++ b/plugins/infinispan4/src/main/resources/ispn.xml
+@@ -22,7 +22,7 @@
+                 concurrencyLevel="32"
+                 writeSkewCheck="false"
+                 useLockStriping="false"
+-                lockAcquisitionTimeout="10000"/>
++                lockAcquisitionTimeout="500"/>
+         <transaction
+                 transactionManagerLookupClass="org.infinispan.transaction.lookup.GenericTransactionManagerLookup"
+                 useEagerLocking="false"
+@@ -44,7 +44,7 @@
+             <sync
+                     replTimeout="150000" />
+             <stateTransfer
+-                    fetchInMemoryState="false"
++                    fetchInMemoryState="true"
+                     chunkSize="100"
+                     timeout="240000"/>
+         </clustering>

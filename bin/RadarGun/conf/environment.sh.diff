@@ -1,0 +1,8 @@
+index eca6e31..ace2983 100755
+--- a/framework/src/main/resources/environment.sh
++++ b/framework/src/main/resources/environment.sh
+@@ -19,4 +19,3 @@ JPROFILER_HOME=${HOME}/jprofiler6
+ JPROFILER_CFG_ID=103
+ JMX_MASTER_PORT="9999"
+ JMX_SLAVES_PORT="9998"
+-

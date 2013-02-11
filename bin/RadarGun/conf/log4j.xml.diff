@@ -1,0 +1,12 @@
+index a7b1260..96aadb7 100644
+--- a/framework/src/main/resources/log4j.xml
++++ b/framework/src/main/resources/log4j.xml
+@@ -60,7 +60,7 @@
+    </category>
+ 
+    <category name="org.radargun">
+-      <priority value="INFO"/>
++      <priority value="TRACE"/>
+    </category>
+ 
+    <category name="org.radargun.reporting">

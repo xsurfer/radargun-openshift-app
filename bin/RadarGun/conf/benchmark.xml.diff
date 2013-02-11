@@ -1,0 +1,87 @@
+index 1a947dd..5c529af 100644
+--- a/framework/src/main/resources/benchmark.xml
++++ b/framework/src/main/resources/benchmark.xml
+@@ -1,11 +1,10 @@
+-<bench-config>
++<bench-config
++         cloudTm="true">
+    <master
+          bindAddress="${127.0.0.1:master.address}"
+          port="${21031:master.port}"/>
+    <benchmark
+-         initSize="${2:Islaves}"
+-         maxSize="${2:slaves}"
+-         increment="1">
++         maxSize="${2:slaves}">
+       <DestroyWrapper
+             runOnAllSlaves="true"/>
+       <StartCluster
+@@ -21,26 +20,52 @@
+             noContentionEnabled="false"
+             transactionSize="50"
+             numberOfKeys="1000"
+-            sizeOfValue="1000"
+-            numOfThreads="2"/>
++            sizeOfValue="10"
++            numOfThreads="1"/>
+       <ResetStats />
++      <!-- BE CAREFUL: la prox sezione dovrebbe essere uguale a un eventuale WebSessionBenchmark per slaves ritardatari -->
+       <WebSessionBenchmark
+-            perThreadSimulTime="300"
++            perThreadSimulTime="60"
+             opsCountStatusLog="500000"
+             numberOfKeys="1000"
+-            sizeOfValue="1000"
+-            wrtOpsPerWriteTx="50"
+-            rdOpsPerWriteTx="50"
+-            rdOpsPerReadTx="100"
++            sizeOfValue="10"
++            wrtOpsPerWriteTx="5"
++            rdOpsPerWriteTx="5"
++            rdOpsPerReadTx="10"
+             statsSamplingInterval="0"
+-            numOfThreads="2"            
++            numOfThreads="1"
+             writeTransactionPercentage="100"            
+             coordinatorParticipation="true"
+             noContentionEnabled="false"/>
+       <CacheSize
+             statName="CACHE_SIZE" />
+-      <CsvReportGeneration/>
++      <!-- Different version of csv generation: it adds the initial timestamps -->
++      <CsvScalingReportGeneration/>
+    </benchmark>
++   <benchmark-scaling>
++      <DestroyWrapper
++            runOnAllSlaves="false"/>
++      <StartCluster
++            staggerSlaveStartup="true"
++            delayAfterFirstSlaveStarts="5000"
++            delayBetweenStartingSlaves="1000"/>
++      <ClearCluster />
++      <ResetStats />
++      <WebSessionBenchmark
++            perThreadSimulTime="30"
++            opsCountStatusLog="500000"
++            numberOfKeys="1000"
++            sizeOfValue="10"
++            wrtOpsPerWriteTx="5"
++            rdOpsPerWriteTx="5"
++            rdOpsPerReadTx="10"
++            statsSamplingInterval="0"
++            numOfThreads="1"
++            writeTransactionPercentage="100"            
++            coordinatorParticipation="true"
++            noContentionEnabled="false"/>
++   </benchmark-scaling>
++
+    <products>
+       <infinispan4>
+          <config name="ispn.xml"/>
+@@ -49,4 +74,4 @@
+    <reports>
+       <report name="Reports" />
+    </reports>
+-</bench-config>
+\ No newline at end of file
++</bench-config>

@@ -1,0 +1,23 @@
+index e9a08c9..de21aec 100755
+--- a/plugins/infinispan4/src/main/resources/jgrp-generator.sh
++++ b/plugins/infinispan4/src/main/resources/jgrp-generator.sh
+@@ -113,8 +113,10 @@ echo "   <PING" >> ${DEST_FILE}
+ fi
+ else
+ #we don't have IP Multicast
+-echo "   <TCPGOSSIP" >> ${DEST_FILE}
+-echo "         initial_hosts=\"\${jgroups.gossip_host:${INITIAL_HOST}}[12001]\"" >> ${DEST_FILE}
++echo "   <TCPPING" >> ${DEST_FILE}
++echo "         initial_hosts=\"\${jgroups.gossip_host:${INITIAL_HOST}}[7800]\"" >> ${DEST_FILE}
++echo "         port_range=\"10\"" >> ${DEST_FILE}
++echo "         return_entire_cache=\"true\"" >> ${DEST_FILE}
+ fi
+ #Discover commom properties
+ echo "         num_initial_members=\"5\"" >> ${DEST_FILE}
+@@ -200,4 +202,4 @@ echo "         />" >> ${DEST_FILE}
+ echo "   <pbcast.STATE_TRANSFER/>" >> ${DEST_FILE}
+ echo "</config>" >> ${DEST_FILE}
+ 
+-echo "Finished!"
+\ No newline at end of file
++echo "Finished!"
