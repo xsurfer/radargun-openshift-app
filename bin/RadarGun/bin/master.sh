@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ## Load includes
 if [ "x$RADARGUN_HOME" = "x" ]; then DIRNAME=`dirname $0`; RADARGUN_HOME=`cd $DIRNAME/..; pwd` ; fi; export RADARGUN_HOME
 . ${RADARGUN_HOME}/bin/includes.sh
