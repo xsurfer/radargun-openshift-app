@@ -85,34 +85,21 @@ for token in $GEARS; do
 	GEARS_COUNT=$((GEARS_COUNT+1)); 
 done; 
 
-# Diff NeededGear-ActiveGear. if > 0 scaling up; else scaling down; =0 do nothing
-NEW_GEARS=$(expr $INIT_GEARS - $GEARS_COUNT)
-
 echo "Active gears: $GEARS_COUNT"
-echo "Needed gears: $INIT_GEARS"
-echo 
-
-if [ "$NEW_GEARS" -gt "0" ]
-then 
-  echo "Scaling up [$NEW_GEARS gears]"
-  CMD="haproxy_ctld -u"
-elif [ "$NEW_GEARS" -lt "0" ]
-then
-  echo "Scaling down [$NEW_GEARS gears]"
-  CMD="haproxy_ctld -d"
-else
-  echo "No scale"
-fi
-
-# absolute value
-NEW_GEARS=${NEW_GEARS#-}
-
-for (( i=1; i<="$NEW_GEARS"; i++ ))
+CMD="haproxy_ctld -d"
+for (( i=1; i<="$GEARS_COUNT"; i++ ))
 do
-  echo "$i gear: $CMD"
+  echo "$i - Tearing down gear [$CMD]"
   `$CMD`
 done
 
+echo "Needed gears: $INIT_GEARS"
+CMD="haproxy_ctld -u"
+for (( i=1; i<="$INIT_GEARS"; i++ ))
+do
+  echo "$i - Building up gear [$CMD]"
+  `$CMD`
+done
 
 if [ $TAILF == "true" ]
 then
