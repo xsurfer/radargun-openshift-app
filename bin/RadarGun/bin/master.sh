@@ -121,6 +121,7 @@ if ! [ "x${MASTER}" = "x" ] ; then
 fi
 
 #enable	remote JMX
+D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.host=${OPENSHIFT_INTERNAL_IP}"
 D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.port=$JMX_MASTER_PORT"
 D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.authenticate=false"
 D_VARS="${D_VARS} -Dcom.sun.management.jmxremote.ssl=false"

@@ -98,7 +98,9 @@ BIND_ADDRESS=`hostname`
 D_VARS="-Djava.net.preferIPv4Stack=true" 
 D_VARS="${D_VARS} -Dlog4j.file.prefix=${LOG4J_PREFIX}" 
 D_VARS="${D_VARS} -Dbind.address=${BIND_ADDRESS}" 
-D_VARS="${D_VARS} -Djgroups.bind_addr=${BIND_ADDRESS}"
+D_VARS="${D_VARS} -Djgroups.bind_addr=${OPENSHIFT_INTERNAL_IP}"
+D_VARS="${D_VARS} -Djgroups.bind_port=${OPENSHIFT_JBOSSAS7CLOUDTM_CLUSTER_PORT}"
+
 
 if [ -n "${GOSSIP_HOST}" ]; then
 D_VARS="${D_VARS} -Djgroups.gossip_host=${GOSSIP_HOST}"
