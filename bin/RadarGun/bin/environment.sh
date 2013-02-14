@@ -6,7 +6,7 @@
 BIND_ADDRESS=${MYTESTIP_2}
 JG_FLAGS="-Dresolve.dns=false -Djgroups.timer.num_threads=4"
 JVM_OPTS="-server"
-JVM_OPTS="$JVM_OPTS -Xmx4G -Xms4G"
+JVM_OPTS="$JVM_OPTS -Xmx512M -Xms512M"
 #If using the cpu service time per thread, then use this optimization
 JVM_OPTS="$JVM_OPTS -XX:+UseLinuxPosixThreadCPUClocks"
 #allocate more memory if needed
