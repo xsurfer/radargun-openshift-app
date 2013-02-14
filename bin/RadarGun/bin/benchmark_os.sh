@@ -1,18 +1,20 @@
 #!/bin/bash
 
+#source "/etc/openshift/node.conf"
+#source ${CARTRIDGE_BASE_PATH}/abstract/info/lib/util
+#CART_NS=$(get_cartridge_namespace_from_path)
+#MASTER_PORT=$(eval echo $`echo "$(echo OPENSHIFT_${CART_NS}_MASTER_PORT)"`)
+
 ## Load includes
 if [ "x$RADARGUN_HOME" = "x" ]; then DIRNAME=`dirname $0`; RADARGUN_HOME=`cd $DIRNAME/..; pwd` ; fi; export RADARGUN_HOME
 . ${RADARGUN_HOME}/bin/includes.sh
 
 
 #### parse plugins we want to test
-SSH_USER=$USER
-WORKING_DIR=`pwd`
 VERBOSE=false
-REMOTE_CMD='ssh -q -o "StrictHostKeyChecking false"'
-MASTER=`hostname`
-SLAVES=""
-SLAVE_COUNT=0
+
+MASTER_PORT=2103
+MASTER=$OPENSHIFT_INTERNAL_IP:$MASTER_PORT
 TAILF=false
 
 help_and_exit() {
@@ -41,18 +43,6 @@ help_and_exit() {
 while ! [ -z $1 ]
 do
   case "$1" in
-    "-u")
-      SSH_USER=$2
-      shift
-      ;;
-    "-w")
-      WORKING_DIR=$2
-      shift
-      ;;
-    "-r")
-      REMOTE_CMD=$2
-      shift
-      ;;
     "-m")
       MASTER=$2
       shift
@@ -63,51 +53,63 @@ do
     "-h")
       help_and_exit
       ;;
-    "-i")
-      N_SLAVES=$2
-      shift
-      ;;
-    *)
-      if [ ${1:0:1} = "-" ] ; then
-        echo "Warning: unknown argument ${1}" 
-        help_and_exit
-      fi
-      SLAVES=$@
-      SLAVE_COUNT=$#
-      shift $#
-      ;;
   esac
   shift
 done
 
-### Make sure the vars are properly set
-if [ -z "$SLAVES" ] ; then
-  echo "FATAL: No slave nodes specified!"
-  help_and_exit
-fi
-
-if [ -n "$N_SLAVES" ] ; then
-    SLAVE_COUNT="$N_SLAVES -i $N_SLAVES"
-fi
-
-
 ####### first start the master
-. ${RADARGUN_HOME}/bin/master.sh -s ${SLAVE_COUNT} -m ${MASTER}
+. ${RADARGUN_HOME}/bin/master.sh -m ${MASTER}
 PID_OF_MASTER_PROCESS=$RADARGUN_MASTER_PID
 #### Sleep for a few seconds so master can open its port
 sleep 5s
-####### then start the rest of the nodes
-CMD="source ~/.bash_profile ; cd $WORKING_DIR"
-CMD="$CMD ; bin/slave.sh -m ${MASTER} -g ${MASTER}"
 
-for slave in $SLAVES; do
-  TOEXEC="$REMOTE_CMD -l $SSH_USER $slave '$CMD'"
-  echo "$TOEXEC"
-  eval $TOEXEC
+####### Spawning the right number of gears
+
+INIT_GEARS=grep "maxSize" ${RADARGUN_HOME}/conf/benchmark.xml | cut -f 2 -d '=' | tr -d ' ' | tr -d '"'
+if [ -z "$INIT_GEARS" ]; then
+  echo "Problems parsing conf/benchmark.xml file"
+  echo "Killing master process..."
+  . ${RADARGUN_HOME}/bin/master.sh -stop
+  exit
+fi
+
+# Loading gears endpoints from conf
+## 8a477de4375e44eaac38530bc196ae77@146.193.41.31:8a477de437;8a477de437-fabietto.fperfetti.it
+
+gears_db=~/haproxy-1.4/conf/gear-registry.db
+
+GEARS=$(sed "s/\:.*//" "$gears_db" | \
+	tr "\n" " ")
+
+GEARS_COUNT=0
+for token in $GEARS; do 
+	GEARS_COUNT=$((GEARS_COUNT+1)); 
+done; 
+
+# Diff NeededGear-ActiveGear. if > 0 scaling up; else scaling down; =0 do nothing
+NEW_GEARS = INIT_GEARS - GEARS_COUNT
+
+echo "Active gears: $GEARS_COUNT"
+echo "Needed gears: $INIT_GEARS"
+echo 
+
+if [ $NEW_GEARS -gt 4 ]; then 
+  echo "Scaling up [$NEW_GEARS gears]"
+  CMD="haproxy_ctld -u"
+else
+  echo "Scaling down [$NEW_GEARS gears]"
+  CMD="haproxy_ctld -d"
+fi
+
+# absolute value
+NEW_GEARS = ${NEW_GEARS#-}
+
+for (( i=1; i<=$NEW_GEARS; i++ ))
+do
+  "$i gear: $CMD"
+  `$CMD`
 done
 
-echo "Slaves started in $SLAVES"
-echo $SLAVES > slaves
 
 if [ $TAILF == "true" ]
 then
