@@ -1,14 +1,13 @@
-<bench-config>
+<bench-config
+         cloudTm="true">
     <master
             bindAddress="${127.0.0.1:master.address}"
             port="${2103:master.port}"/>
     <benchmark
-            initSize="4"
-            maxSize="4"
-            increment="2">
+         maxSize="${1:slaves}">
             
-        <!--DestroyWrapper
-                runOnAllSlaves="true"/-->
+       <DestroyWrapper
+                runOnAllSlaves="true"/>
         <StartCluster
                 staggerSlaveStartup="false"
                 delayAfterFirstSlaveStarts="5000"
@@ -18,23 +17,22 @@
                 partialReplication="false"/>
         <TpccPopulation
                 preloadedFromDB="false"
-                numWarehouses="15"
+                numWarehouses="1"
                 cLastMask="0"
                 olIdMask="0"
                 cIdMask="0"
                 threadParallelLoad="true"
                 batchLevel="50"
-                numLoaderThreads="3"
-                oneWarmup="true"/>        
+                numLoaderThreads="1"
+                oneWarmup="false"/>        
        <GarbageCollection/>
-        <!--GC only here because eraseNewKeys already includes a gc phase--> 
         <ResetStats/>
         <CacheSize
                 statName="CACHE_SIZE_BEFORE_BENCH"/>
         <TpccBenchmark
                 statsSamplingInterval="30000"
-                numOfThreads="3"
-                perThreadSimulTime="180"
+                numOfThreads="1"
+                perThreadSimulTime="60"
                 arrivalRate="0"
                 accessSameWarehouse="false"
                 paymentWeight="43"
@@ -42,135 +40,38 @@
 		retryOnAbort="true"
 		backOffTime="0"
 		perThreadTrackNewKeys="true"/>
-	<TpccCsvReportGeneration/>  
+<!--	<TpccCsvReportGeneration/>  -->
       <EraseNewKeys batchSize="50"/>
 <ResetStats/>
 
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="5"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="43"
-                orderStatusWeight="53"
-                retryOnAbort="true"
-		backOffTime="0"
-                perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>
-<ResetStats/>
-
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="8"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="43"
-                orderStatusWeight="53"
-                retryOnAbort="true"
-		backOffTime="0"
-                perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>
-<ResetStats/>
-
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="11"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="43"
-                orderStatusWeight="53"
-                backOffTime="0"
-		retryOnAbort="true"
-                perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>         
-<ResetStats/>
-         
-         
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="30000"
-                numOfThreads="3"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="5"
-                orderStatusWeight="90"
-		retryOnAbort="true"
-		backOffTime="0"
-		perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>
-<ResetStats/>
-
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="5"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="5"
-                orderStatusWeight="90"
-                retryOnAbort="true"
-		backOffTime="0"
-                perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>
-<ResetStats/>
-
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="8"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="5"
-                orderStatusWeight="90"
-                retryOnAbort="true"
-		backOffTime="0"
-                perThreadTrackNewKeys="true"/>
-<TpccCsvReportGeneration/>
-      <EraseNewKeys batchSize="50"/>
-<ResetStats/>
-
-
-        <CacheSize
-                statName="CACHE_SIZE_BEFORE_BENCH"/>
-        <TpccBenchmark
-                statsSamplingInterval="5000"
-                numOfThreads="11"
-                perThreadSimulTime="180"
-                arrivalRate="0"
-                accessSameWarehouse="false"
-                paymentWeight="5"
-                orderStatusWeight="90"
-                backOffTime="0"
-		retryOnAbort="true"
-                perThreadTrackNewKeys="true"/>
  
 <TpccCsvReportGeneration/>
  </benchmark>
+
+
+<benchmark-scaling>
+      <DestroyWrapper
+            runOnAllSlaves="false"/>
+      <StartCluster
+            staggerSlaveStartup="true"
+            delayAfterFirstSlaveStarts="5000"
+            delayBetweenStartingSlaves="1000"/>
+      <ClearCluster />
+      <ResetStats />
+      <TpccBenchmark
+                statsSamplingInterval="30000"
+                numOfThreads="1"
+                perThreadSimulTime="60"
+                arrivalRate="0"
+                accessSameWarehouse="false"
+                paymentWeight="43"
+                orderStatusWeight="53"
+                retryOnAbort="true"
+	    backOffTime="0"
+	    perThreadTrackNewKeys="true"/>
+   </benchmark-scaling>
+
+
     <products>
         <infinispan4>
             <config name="provaPC.xml"/>
@@ -180,3 +81,5 @@
         <report enabled="false" name="Reports"/>
     </reports>
 </bench-config>
+
+
