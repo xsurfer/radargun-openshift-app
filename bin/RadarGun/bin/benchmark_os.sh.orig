@@ -9,6 +9,7 @@
 if [ "x$RADARGUN_HOME" = "x" ]; then DIRNAME=`dirname $0`; RADARGUN_HOME=`cd $DIRNAME/..; pwd` ; fi; export RADARGUN_HOME
 . ${RADARGUN_HOME}/bin/includes.sh
 
+
 #### parse plugins we want to test
 VERBOSE=false
 
@@ -64,11 +65,11 @@ sleep 5s
 
 ####### Spawning the right number of gears
 
-INIT_GEARS=$(grep "maxSize" ${RADARGUN_HOME}/conf/benchmark.xml | cut -f 2 -d '=' | tr -d ' ' | tr -d '"')
+INIT_GEARS=grep "maxSize" ${RADARGUN_HOME}/conf/benchmark.xml | cut -f 2 -d '=' | tr -d ' ' | tr -d '"'
 if [ -z "$INIT_GEARS" ]; then
   echo "Problems parsing conf/benchmark.xml file"
   echo "Killing master process..."
-  . ./${RADARGUN_HOME}/bin/master.sh -stop
+  . ${RADARGUN_HOME}/bin/master.sh -stop
   exit
 fi
 
@@ -86,30 +87,26 @@ for token in $GEARS; do
 done; 
 
 # Diff NeededGear-ActiveGear. if > 0 scaling up; else scaling down; =0 do nothing
-NEW_GEARS=$(expr $INIT_GEARS - $GEARS_COUNT)
+NEW_GEARS = INIT_GEARS - GEARS_COUNT
 
 echo "Active gears: $GEARS_COUNT"
 echo "Needed gears: $INIT_GEARS"
 echo 
 
-if [ "$NEW_GEARS" -gt "0" ]
-then 
+if [ $NEW_GEARS -gt 4 ]; then 
   echo "Scaling up [$NEW_GEARS gears]"
   CMD="haproxy_ctld -u"
-elif [ "$NEW_GEARS" -lt "0" ]
-then
+else
   echo "Scaling down [$NEW_GEARS gears]"
   CMD="haproxy_ctld -d"
-else
-  echo "No scale"
 fi
 
 # absolute value
-NEW_GEARS=${NEW_GEARS#-}
+NEW_GEARS = ${NEW_GEARS#-}
 
-for (( i=1; i<="$NEW_GEARS"; i++ ))
+for (( i=1; i<=$NEW_GEARS; i++ ))
 do
-  echo "$i gear: $CMD"
+  "$i gear: $CMD"
   `$CMD`
 done
 
