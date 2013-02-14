@@ -12,3 +12,9 @@
 # prevent your application from stopping cleanly or starting at all.
 # Application start and stop is subject to different timeouts
 # throughout the system.
+
+if [ ! -d ~/haproxy-1.4  ]; then
+  pushd ~/app-root/repo/bin/RadarGun
+  ./bin/slave.sh -m ${OPENSHIFT_JBOSSAS7CLOUDTM_RADARGUN_MASTER}
+  popd
+fi
