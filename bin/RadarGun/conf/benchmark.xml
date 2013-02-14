@@ -3,9 +3,9 @@
             bindAddress="${127.0.0.1:master.address}"
             port="${2103:master.port}"/>
     <benchmark
-            initSize="4"
-            maxSize="4"
-            increment="2">
+            initSize="2"
+            maxSize="2"
+            increment="1">
             
         <!--DestroyWrapper
                 runOnAllSlaves="true"/-->
