@@ -64,7 +64,7 @@ sleep 5s
 
 ####### Spawning the right number of gears
 
-INIT_GEARS=$(grep "maxSize" ${RADARGUN_HOME}/conf/benchmark.xml | cut -f 2 -d '=' | tr -d ' ' | tr -d '"')
+INIT_GEARS=$(grep "maxSize" ${RADARGUN_HOME}/conf/benchmark.xml | cut -f 2 -d '=' | tr -d ' ' | tr -d '"' | sed 's/[^0-9]//g' )
 if [ -z "$INIT_GEARS" ]; then
   echo "Problems parsing conf/benchmark.xml file"
   echo "Killing master process..."
