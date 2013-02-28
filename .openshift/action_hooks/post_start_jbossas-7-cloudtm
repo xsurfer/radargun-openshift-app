@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -e
+set -x
+exec > /tmp/debug-post_start_jbossas-7-cloudtm.log.$$ 2>&1
+
 # The pre_start_cartridge and pre_stop_cartridge hooks are *SOURCED*
 # immediately before (re)starting or stopping the specified cartridge.
 # They are able to make any desired environment variable changes as
@@ -13,7 +17,33 @@
 # Application start and stop is subject to different timeouts
 # throughout the system.
 
+
 if [ ! -d ~/haproxy-1.4  ]; then
+  # Inside backend node
+  CONSUMER_CONFIG_FILE=resource_consumer.config
+  PRODUCER_CONFIG_FILE=resource_controller.config
+  INFINISPAN_CONFIG_FILE=infinispan_probe.config
+  
+  # LogService ip and port
+  # OPENSHIFT_CLOUDTM_LOGSERVICE=x.x.x.x:pppp
+  logservice_ip=$(echo "${OPENSHIFT_CLOUDTM_LOGSERVICE}" | cut -f 1 -d ':' | tr -d "'")
+  logservice_port=$(echo "${OPENSHIFT_CLOUDTM_LOGSERVICE}" | cut -f 2 -d ':' | tr -d "'")
+
+  # Configuring the WPM Consumer/Producer configs  
+  pushd ~/app-root/repo/bin/wpm/config
+    # PRODUCER
+    sed -i "s/\${OPENSHIFT_INTERNAL_IP}/${OPENSHIFT_INTERNAL_IP}/g" ${PRODUCER_CONFIG_FILE}
+    
+    # CONSUMER
+    sed -i "s/\${OPENSHIFT_INTERNAL_IP}/${OPENSHIFT_INTERNAL_IP}/g" ${CONSUMER_CONFIG_FILE}
+    sed -i "s/\${LOGSERVICE_IP}/${logservice_ip}/g"                 ${CONSUMER_CONFIG_FILE}
+    sed -i "s/\${LOGSERVICE_PORT}/${logservice_port}/g"             ${CONSUMER_CONFIG_FILE}
+
+    # INFINISPAN
+    sed -i "s/\${OPENSHIFT_INTERNAL_IP}/${OPENSHIFT_INTERNAL_IP}/g" ${INFINISPAN_CONFIG_FILE}        
+  popd
+
+  # Starting the SLAVE
   pushd ~/app-root/repo/bin/RadarGun
   ./bin/slave.sh -m ${OPENSHIFT_JBOSSAS7CLOUDTM_RADARGUN_MASTER}
   popd
